@@ -13,6 +13,10 @@ from lavis.datasets.datasets.coco_caption_datasets import (
     COCOCapEvalDataset,
     NoCapsEvalDataset,
 )
+from lavis.datasets.datasets.text2shape_datasets import (
+    Text2ShapeDataset, 
+    Text2ShapeEvalDataset,
+)
 
 from lavis.common.registry import registry
 from lavis.datasets.datasets.video_caption_datasets import (
@@ -318,4 +322,13 @@ class CharadeCaptionInstructBuilder(BaseDatasetBuilder):
 
     DATASET_CONFIG_DICT = {
         "default": "configs/datasets/charade/defaults_cap_instruct.yaml",
+    }
+
+@registry.register_builder("text2shape")
+class Text2ShapeBuilder(BaseDatasetBuilder):
+    train_dataset_cls = Text2ShapeDataset
+    eval_dataset_cls = Text2ShapeEvalDataset
+
+    DATASET_CONFIG_DICT = {
+        "default": "configs/datasets/text2shape/defaults_cap.yaml",
     }

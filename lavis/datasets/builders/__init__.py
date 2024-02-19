@@ -31,7 +31,8 @@ from lavis.datasets.builders.caption_builder import (
     TextCapsCapBuilder,
     TextCapsCapInstructBuilder,
     Flickr30kCapBuilder,
-    Flickr30kCapInstructBuilder
+    Flickr30kCapInstructBuilder, 
+    Text2ShapeBuilder,
 
 )
 from lavis.datasets.builders.image_text_pair_builder import (
@@ -222,7 +223,10 @@ __all__ = [
 
     # DisCRN
     "DiscrnImagePcBuilder",
-    "DiscrnAudioVideoBuilder"
+    "DiscrnAudioVideoBuilder",
+
+    # Custom dataset
+    "Text2ShapeBuilder",
 
 ]
 

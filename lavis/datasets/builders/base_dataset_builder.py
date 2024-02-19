@@ -322,6 +322,6 @@ class MultiModalDatasetBuilder(BaseDatasetBuilder):
         
         return dataset_args
 
-def load_dataset_config(cfg_path):
+def load_dataset_config(cfg_path): # Ex) cfg_path: lavis/projects/blip2/train/caption_coco_ft.yaml
     cfg = OmegaConf.load(cfg_path).datasets
     return next(iter(cfg.values()))
