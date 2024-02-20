@@ -22,4 +22,5 @@ datasets:
           url: /root/data/text2shape/annotations/text2shape_test.json
           storage: text2shape/annotations/text2shape_test.json
       images:
-        storage: /root/data/text2shape/rendering/
+        # storage: /root/data/text2shape/rendering/ # file server
+        storage: text2shape/images/ # cache
