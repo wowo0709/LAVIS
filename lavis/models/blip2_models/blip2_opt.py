@@ -232,10 +232,10 @@ class Blip2OPT(Blip2Base):
             outputs = self.opt_model.generate(
                 inputs_embeds=inputs_embeds, 
                 attention_mask=attention_mask,
-                do_sample=use_nucleus_sampling,
-                top_p=top_p,
+                do_sample=use_nucleus_sampling, # Sampling probabilistically
+                top_p=top_p, # Probability thresholding for sampling
                 temperature=temperature,
-                num_beams=num_beams,
+                num_beams=num_beams, # Consider top-k candidates for beam search
                 max_length=max_length,
                 min_length=min_length,
                 eos_token_id=self.eos_token_id,
