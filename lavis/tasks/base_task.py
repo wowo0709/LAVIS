@@ -250,7 +250,7 @@ class BaseTask:
             metric_logger.update(**loss_dict)
             metric_logger.update(lr=optimizer.param_groups[0]["lr"])
             if use_wandb and i % log_freq == 0 and int(os.environ["RANK"]) == 0:
-                wandb.log({"Train loss (iter)": loss.item()})
+                wandb.log({"Train loss (iter)": loss.item()}, step=inner_epoch * iters_per_epoch + i)
                 wandb.log({"Learning rate": optimizer.param_groups[0]["lr"]})
 
         # after train_epoch()
