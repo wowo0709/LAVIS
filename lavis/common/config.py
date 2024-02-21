@@ -16,7 +16,8 @@ from lavis.common.registry import registry
 class Config:
     def __init__(self, args):
         self.config = {}
-
+        
+        # ETC arguments
         self.args = args
 
         # Register the config and configuration for setup
@@ -50,6 +51,8 @@ class Config:
         runner_config_validator.validate(runner_config)
 
     def _build_opt_list(self, opts):
+        print("===== opt =====")
+        print(opts)
         opts_dot_list = self._convert_to_dot_list(opts)
         return OmegaConf.from_dotlist(opts_dot_list)
 

@@ -34,6 +34,13 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader, DistributedSampler
 from torch.utils.data.dataset import ChainDataset
 
+import wandb
+# Manually force only 1 process creates wandb run
+# print("RANK:", int(os.environ["RANK"]))
+# print("WORLD SIZE:", int(os.environ["WORLD_SIZE"]))
+# print("LOCAL RANK:", int(os.environ["LOCAL_RANK"]))
+# exit()
+
 
 @registry.register_runner("runner_base")
 class RunnerBase:
@@ -52,6 +59,9 @@ class RunnerBase:
         self.datasets = datasets
 
         self._model = model
+        if self.config.args.use_wandb and int(os.environ["RANK"]) == 0:
+            wandb.init(project="blip2-finetuning")
+            wandb.watch(model)
 
         self._wrapped_model = None
         self._device = None
@@ -366,6 +376,8 @@ class RunnerBase:
         best_epoch = 0
 
         self.log_config()
+        if self.config.args.use_wandb and int(os.environ["RANK"]) == 0:
+            wandb.config.update(self.config.to_dict())
 
         # resume from checkpoint if specified
         if not self.evaluate_only and self.resume_ckpt_path is not None:
@@ -383,6 +395,11 @@ class RunnerBase:
                 #     )
                 train_stats = self.train_epoch(cur_epoch)
                 self.log_stats(split_name="train", stats=train_stats)
+                if self.config.args.use_wandb and int(os.environ["RANK"]) == 0:
+                    if isinstance(train_stats, dict):
+                        wandb.log({"Train loss (epoch)": float(train_stats["loss"])})
+                    else:
+                        pass
 
             # evaluation phase
             if len(self.valid_splits) > 0 and (self.evaluate_only or cur_epoch%self.val_freq == 0):
@@ -406,6 +423,11 @@ class RunnerBase:
 
                             val_log.update({"best_epoch": best_epoch})
                             self.log_stats(val_log, split_name)
+                            if self.config.args.use_wandb and int(os.environ["RANK"]) == 0:
+                                if isinstance(val_log, dict):
+                                    wandb.log(val_log)
+                                else:
+                                    pass
 
             else:
                 # if no validation split is provided, we just save the checkpoint at the end of each epoch.
@@ -448,6 +470,12 @@ class RunnerBase:
         # train
         self.model.train()
 
+        """
+        return {
+            k: "{:.3f}".format(meter.global_avg)
+            for k, meter in metric_logger.meters.items()
+        }
+        """
         return self.task.train_epoch(
             epoch=epoch,
             model=self.model,
@@ -458,6 +486,7 @@ class RunnerBase:
             cuda_enabled=self.cuda_enabled,
             log_freq=self.log_freq,
             accum_grad_iters=self.accum_grad_iters,
+            use_wandb=self.config.args.use_wandb,
         )
 
     @torch.no_grad()

@@ -7,6 +7,7 @@
 
 import logging
 import os
+import wandb
 
 import torch
 import torch.distributed as dist
@@ -112,6 +113,7 @@ class BaseTask:
         cuda_enabled=False,
         log_freq=50,
         accum_grad_iters=1,
+        use_wandb=False, 
     ):
         return self._train_inner_loop(
             epoch=epoch,
@@ -124,6 +126,7 @@ class BaseTask:
             log_freq=log_freq,
             cuda_enabled=cuda_enabled,
             accum_grad_iters=accum_grad_iters,
+            use_wandb=use_wandb,
         )
 
     def train_iters(
@@ -139,6 +142,7 @@ class BaseTask:
         cuda_enabled=False,
         log_freq=50,
         accum_grad_iters=1,
+        use_wandb=False,
     ):
         return self._train_inner_loop(
             epoch=epoch,
@@ -152,6 +156,7 @@ class BaseTask:
             log_freq=log_freq,
             cuda_enabled=cuda_enabled,
             accum_grad_iters=accum_grad_iters,
+            use_wandb=use_wandb,
         )
 
     def _train_inner_loop(
@@ -167,6 +172,7 @@ class BaseTask:
         log_freq=50,
         cuda_enabled=False,
         accum_grad_iters=1,
+        use_wandb=False,
     ):
         """
         An inner training loop compatible with both epoch-based and iter-based training.
@@ -243,6 +249,9 @@ class BaseTask:
 
             metric_logger.update(**loss_dict)
             metric_logger.update(lr=optimizer.param_groups[0]["lr"])
+            if use_wandb and i % log_freq == 0 and int(os.environ["RANK"]) == 0:
+                wandb.log({"Train loss (iter)": loss.item()})
+                wandb.log({"Learning rate": optimizer.param_groups[0]["lr"]})
 
         # after train_epoch()
         # gather the stats from all processes
