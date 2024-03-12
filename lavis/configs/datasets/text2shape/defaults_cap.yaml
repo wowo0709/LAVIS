@@ -19,8 +19,10 @@ datasets:
           url: /root/data/text2shape/annotations/text2shape_val.json
           storage: text2shape/annotations/text2shape_val.json
         test:
-          url: /root/data/text2shape/annotations/text2shape_test.json
-          storage: text2shape/annotations/text2shape_test.json
+          # url: /root/data/text2shape/annotations/text2shape_test.json
+          # storage: text2shape/annotations/text2shape_test.json
+          url: /root/data/text2shape/annotations/text2shape_airplane.json
+          storage: text2shape/annotations/text2shape_airplane.json
       images:
-        # storage: /root/data/text2shape/rendering/ # file server
-        storage: text2shape/images/ # cache
+        storage: /root/hdd3/text2shape/rendering/ # HDD
+        # storage: text2shape/images/ # cache
